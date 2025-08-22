@@ -273,7 +273,7 @@ body {
 .light body,
 body.light {
   background: linear-gradient(120deg, #f1f5ff, #f7fcff);
-  color: #111827
+  color: #111827;
 }
 
 body.light .bg {
