@@ -138,8 +138,8 @@
                 "range": "B86:F92"
             },
             "mapping": {
-                "x": "Category",
-                "y": ["Non-furries", "Furries", "Both", "Unknown"]
+                "x": ["Non-furries", "Furries", "Both", "Unknown"],
+                "y": "Category"
             },
             "chart": {
                 "type": "bar",
