@@ -1,0 +1,58 @@
+{
+    "charts": [{
+            "id": "attendees-by-country",
+            "title": "Attendees by Country",
+            "source": {
+                "type": "csv",
+                "path": "data/attendees_by_country.csv"
+            },
+            "mapping": {
+                "x": "Country",
+                "y": "Count"
+            },
+            "chart": {
+                "type": "bar",
+                "stacked": false,
+                "options": {
+                    "colors": ["#60a5fa", "#34d399", "#fbbf24", "#f472b6"]
+                }
+            }
+        },
+        {
+            "id": "gender-split",
+            "title": "Gender Split (from Google Form)",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/REPLACE_ME/edit#gid=0",
+                "sheet": "Form Responses 1"
+            },
+            "mapping": {
+                "label": "Gender"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "trend-vs-target",
+            "title": "Monthly Attendees vs Target",
+            "source": {
+                "type": "csv",
+                "path": "data/trend.csv"
+            },
+            "mapping": {
+                "x": "Month",
+                "bar": "Attendees",
+                "line": "Target"
+            },
+            "chart": {
+                "type": "combo",
+                "barName": "Attendees",
+                "lineName": "Target",
+                "options": {
+                    "colors": ["#22d3ee", "#f97316"]
+                }
+            }
+        }
+    ]
+}
