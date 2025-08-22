@@ -1,7 +1,7 @@
 {
     "charts": [{
             "id": "attendees-by-country",
-            "title": "Attendees by Country",
+            "title": "Attendees by Country (Sample)",
             "source": {
                 "type": "csv",
                 "path": "data/attendees_by_country.csv"
@@ -20,7 +20,7 @@
         },
         {
             "id": "gender-split",
-            "title": "Gender Split (from Google Form)",
+            "title": "Gender Split (Sample)",
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/REPLACE_ME/edit#gid=0",
@@ -35,7 +35,7 @@
         },
         {
             "id": "trend-vs-target",
-            "title": "Monthly Attendees vs Target",
+            "title": "Monthly Attendees vs Target (Sample)",
             "source": {
                 "type": "csv",
                 "path": "data/trend.csv"
