@@ -485,6 +485,6 @@
       "'": "&#39;"
     } [c]))
   }
-})();
 
-loadDefaultConfig();
+  loadDefaultConfig();
+})();
