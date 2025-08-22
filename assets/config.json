@@ -4,7 +4,7 @@
             "title": "Attendees by Country (Sample)",
             "source": {
                 "type": "csv",
-                "path": "data/attendees_by_country.csv"
+                "path": "/data/attendees_by_country.csv"
             },
             "mapping": {
                 "x": "Country",
@@ -22,9 +22,8 @@
             "id": "gender-split",
             "title": "Gender Split (Sample)",
             "source": {
-                "type": "google_sheet",
-                "url": "https://docs.google.com/spreadsheets/d/REPLACE_ME/edit#gid=0",
-                "sheet": "Form Responses 1"
+                "type": "csv",
+                "path": "/data/form_responses_sample.csv"
             },
             "mapping": {
                 "label": "Gender"
@@ -38,7 +37,7 @@
             "title": "Monthly Attendees vs Target (Sample)",
             "source": {
                 "type": "csv",
-                "path": "data/trend.csv"
+                "path": "/data/trend.csv"
             },
             "mapping": {
                 "x": "Month",
