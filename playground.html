@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FMCYFTFPEL"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-FMCYFTFPEL');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9715826188316382"
+        crossorigin="anonymous"></script>
+
+    <link rel="manifest" href="../manifest.json" />
+
+    <meta charset="utf-8">
+    <title>Furstat GFTV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Furstat GFTV" />
+    <meta property="og:site_name" content="Furstat GFTV" />
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Comfortaa">
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- Embed Image -->
+    <link rel="apple-touch-icon" href="/GFTV.png">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image:src" content="/GFTV.png">
+    <meta property="og:image" content="/GFTV.png" />
+
+    <!-- Plotly + PapaParse -->
+    <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <script defer="" src="https://use.fontawesome.com/releases/v7.0.0/js/all.js"></script>
+
+    <script>
+        function playNggyu() {
+            var audio = document.getElementById("audio");
+            audio.play();
+        }
+    </script>
+</head>
+
+<body>
+    <div class="bg"></div>
+
+    <header class="topbar">
+        <div class="brand">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3c4 0 7 3 7 7 0 3-2 6-5 8l-2 3-2-3c-3-2-5-5-5-8 0-4 3-7 7-7Z" stroke="currentColor"
+                    stroke-width="1.5" />
+                <path
+                    d="M9.5 10.5c.7 0 1.25-.56 1.25-1.25S10.2 8 9.5 8 8.25 8.56 8.25 9.25 8.8 10.5 9.5 10.5Zm5 0c.7 0 1.25-.56 1.25-1.25S15.2 8 14.5 8 13.25 8.56 13.25 9.25 13.8 10.5 14.5 10.5Z"
+                    fill="currentColor" /></svg>
+            <span>Data Playground</span>
+        </div>
+        <nav class="nav">
+            <a href="/home" class="btn">← Dashboard</a>
+            <button id="themeToggle" class="icon-btn" title="Toggle theme">🌗</button>
+        </nav>
+    </header>
+
+    <main class="container two-col">
+        <aside class="glass panel">
+            <h2>Load Data</h2>
+            <div class="stack">
+                <label class="file full">
+                    <input type="file" id="csvFile" accept=".csv,text/csv" />
+                    <span>Upload CSV file</span>
+                </label>
+                <div class="or">or</div>
+                <input id="csvUrl" class="input" placeholder="Paste CSV URL or Google Sheets link" />
+                <button id="loadUrl" class="btn">Load from URL</button>
+                <details>
+                    <summary>Paste CSV text</summary>
+                    <textarea id="csvText" class="textarea" rows="6" placeholder=","
+                        Country,Count\nSingapore,120\nMalaysia,80\n..."></textarea>
+                    <button id="loadText" class="btn">Load text</button>
+                </details>
+                <p class="muted tiny">Google Form responses → open the linked Google Sheet → File → Share → Publish to
+                    web → CSV. Paste that link above (or the Sheet URL; we’ll try to convert it).</p>
+            </div>
+
+            <h2>Chart Setup</h2>
+            <div class="grid grid-2">
+                <label>Chart type
+                    <select id="chartType" class="input">
+                        <option>bar</option>
+                        <option>line</option>
+                        <option>pie</option>
+                        <option>scatter</option>
+                        <option value="combo">bar+line</option>
+                    </select>
+                </label>
+                <label>Stack bars
+                    <select id="stacked" class="input">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </label>
+
+                <label>X axis / Label
+                    <select id="xCol" class="input"></select>
+                </label>
+                <label>Y (value)
+                    <select id="yCol" class="input"></select>
+                </label>
+                <label>Group (optional)
+                    <select id="groupCol" class="input"></select>
+                </label>
+                <label>Second Y for combo
+                    <select id="y2Col" class="input"></select>
+                </label>
+            </div>
+
+            <h2>Colours</h2>
+            <div class="grid grid-2" id="colorPickers"></div>
+            <div class="stack">
+                <button id="render" class="btn primary">Render</button>
+                <button id="downloadPng" class="btn">Download PNG</button>
+                <button id="copyEmbed" class="btn">Copy Embed Code</button>
+            </div>
+
+            <h2>Export Config Snippet</h2>
+            <textarea id="configOut" class="textarea" rows="8" readonly></textarea>
+            <div class="stack">
+                <button id="copyConfig" class="btn">Copy JSON</button>
+                <button id="saveSession" class="btn">Save session</button>
+                <button id="loadSession" class="btn">Load session</button>
+            </div>
+        </aside>
+
+        <section class="glass panel">
+            <div id="playgroundChart" class="chart"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <span>Made with ❤️ by Global Furry Television Intl &copy; 2025</span>
+    </footer>
+
+    <script src="/playground.js"></script>
+</body>
+
+</html>

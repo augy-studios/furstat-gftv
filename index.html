@@ -38,6 +38,10 @@
     <meta name="twitter:image:src" content="/GFTV.png">
     <meta property="og:image" content="/GFTV.png" />
 
+    <!-- Plotly + PapaParse -->
+    <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
     <script defer="" src="https://use.fontawesome.com/releases/v7.0.0/js/all.js"></script>
 
@@ -50,80 +54,43 @@
 </head>
 
 <body>
-    <div class="shell">
-        <header>
-            <div class="brand">
-                <div class="logo">🏳️</div>
-                <div>
-                    <div class="big">Flag Match</div>
-                    <div class="hint">Guess the country from its flag — 20 questions per round</div>
-                </div>
+    <div class="bg"></div>
+
+    <header class="topbar">
+        <div class="brand">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3c4 0 7 3 7 7 0 3-2 6-5 8l-2 3-2-3c-3-2-5-5-5-8 0-4 3-7 7-7Z" stroke="currentColor"
+                    stroke-width="1.5" />
+                <path
+                    d="M9.5 10.5c.7 0 1.25-.56 1.25-1.25S10.2 8 9.5 8 8.25 8.56 8.25 9.25 8.8 10.5 9.5 10.5Zm5 0c.7 0 1.25-.56 1.25-1.25S15.2 8 14.5 8 13.25 8.56 13.25 9.25 13.8 10.5 14.5 10.5Z"
+                    fill="currentColor" /></svg>
+            <span>Furry Stats Visualiser</span>
+        </div>
+        <nav class="nav">
+            <a href="playground.html" class="btn">Playground</a>
+            <button id="themeToggle" class="icon-btn" title="Toggle theme">🌗</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="controls glass">
+            <div class="control-row">
+                <label class="file">
+                    <input type="file" id="configUpload" accept="application/json" />
+                    <span>Upload config.json</span>
+                </label>
+                <button id="reloadDefault" class="btn">Load default config</button>
             </div>
-            <div class="panel controls">
-                <select id="region">
-                    <option value="All">All regions</option>
-                    <option value="Africa">Africa</option>
-                    <option value="Americas">Americas</option>
-                    <option value="Asia">Asia</option>
-                    <option value="Europe">Europe</option>
-                    <option value="Oceania">Oceania</option>
-                </select>
-                <select id="mode">
-                    <option value="mc4">Multiple choice (4)</option>
-                    <option value="mc6">Multiple choice (6)</option>
-                </select>
-                <button id="restart" class="primary">Restart</button>
-                <button id="skip" class="ghost">Skip</button>
-            </div>
-        </header>
-
-        <section class="main">
-            <div class="panel flagcard">
-                <div class="flagwrap">
-                    <img id="flag" class="flag" alt="Country flag" />
-                    <div id="loader" class="loader">Loading flag…</div>
-                </div>
-                <div id="answers" class="answers"></div>
-            </div>
-
-            <aside class="sidebar">
-                <div class="panel card">
-                    <div class="flex">
-                        <div>
-                            <div class="title">Progress</div>
-                            <div class="row"><span id="qnum" class="big">1</span><span class="muted">/ 20</span></div>
-                        </div>
-                        <div class="pill">Streak: <span id="streak">0</span></div>
-                    </div>
-                    <div class="bar" style="margin-top:12px"><span id="progress"></span></div>
-                </div>
-
-                <div class="panel card">
-                    <div class="title">Score</div>
-                    <div class="row" style="align-items:baseline">
-                        <div class="big" id="score">0</div>
-                        <div class="muted">High score: <strong id="best">0</strong></div>
-                    </div>
-                </div>
-
-                <div class="panel card">
-                    <div class="title">How to play</div>
-                    <div class="hint">
-                        • Pick the correct country name.<br />
-                        • Keyboard: <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span>
-                        <span class="kbd">4</span> (and <span class="kbd">5</span> <span class="kbd">6</span> if 6
-                        choices).<br />
-                        • <span class="kbd">N</span> or <span class="kbd">Enter</span> to skip/next.
-                    </div>
-                </div>
-
-                <div class="panel foot">
-                    <a class="source" href="https://restcountries.com" target="_blank" rel="noreferrer">REST Countries
-                        API</a>
-                </div>
-            </aside>
+            <p class="muted">This dashboard reads <code>assets/config.json</code> (if present) or falls back to
+                <code>assets/config.sample.json</code>. You can also upload a config file above.</p>
         </section>
-    </div>
+
+        <section id="dashboard" class="grid"></section>
+    </main>
+
+    <footer class="footer">
+        <span>Made with ❤️ by Global Furry Television Intl &copy; 2025</span>
+    </footer>
 
     <script src="/script.js"></script>
 </body>
