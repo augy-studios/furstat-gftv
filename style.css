@@ -42,7 +42,7 @@
   --glass: rgba(255, 255, 255, 0.08);
   --text: #e9edf1;
   --muted: #a7b0c6;
-  --accent: #7af0b2;
+  --accent: #fedc00;
   --accent-2: #72a7ff;
   --radius: 20px;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
@@ -280,14 +280,16 @@ body.light .bg {
   background:
     radial-gradient(900px 600px at 10% -10%, rgba(79, 70, 229, .12), transparent),
     radial-gradient(600px 500px at 110% 10%, rgba(16, 185, 129, .12), transparent),
-    radial-gradient(700px 600px at 50% 100%, rgba(0, 0, 0, .03), transparent)
+    radial-gradient(700px 600px at 50% 100%, rgba(0, 0, 0, .03), transparent);
+  color: #111827;
 }
 
 body.light .controls.glass,
 body.light .panel.glass,
 body.light .card {
   background: rgba(255, 255, 255, .6);
-  border-color: rgba(0, 0, 0, .06)
+  border-color: rgba(0, 0, 0, .06);
+  color: #111827;
 }
 
 body.light .btn.primary {

@@ -1,7 +1,5 @@
 (function () {
   const dashboardEl = document.getElementById('dashboard');
-  const configUpload = document.getElementById('configUpload');
-  const reloadDefault = document.getElementById('reloadDefault');
   const themeToggle = document.getElementById('themeToggle');
 
   const DEFAULTS = {
@@ -14,18 +12,6 @@
   loadDefaultConfig();
 
   function bindUI() {
-    if (configUpload) {
-      configUpload.addEventListener('change', async (e) => {
-        const file = e.target.files ?. [0];
-        if (!file) return;
-        const text = await file.text();
-        const cfg = JSON.parse(text);
-        renderDashboard(cfg);
-      });
-    }
-    if (reloadDefault) {
-      reloadDefault.addEventListener('click', loadDefaultConfig);
-    }
     if (themeToggle) {
       themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('light');
@@ -48,7 +34,7 @@
       } catch (e) {
         /* try next */ }
     }
-    dashboardEl.innerHTML = `<div class="card"><h3>No config found</h3><p class="muted">Provide <code>assets/config.json</code> or upload one above.</p></div>`;
+    dashboardEl.innerHTML = `<div class="card"><h3>No config found</h3><p class="muted">Place <code>assets/config.json</code> in your project.</p></div>`;
   }
 
   function initTheme() {
