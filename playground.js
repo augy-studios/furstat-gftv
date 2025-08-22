@@ -20,59 +20,82 @@
         const text = await file.text();
         parseCsvText(text);
     });
+
     el('loadUrl').addEventListener('click', async () => {
         const raw = el('csvUrl').value.trim();
+        const a1 = (el('gsRange') ?.value || '').trim();
+        const tq = (el('gsTq') ?.value || '').trim();
         if (!raw) return;
-        const url = toGoogleCsvUrl(raw);
+        const url = toGoogleCsvUrl(raw, {
+            tq
+        });
         Papa.parse(url, {
             download: true,
             header: true,
             dynamicTyping: true,
             skipEmptyLines: true,
             complete: (res) => {
-                setRows(res.data)
+                let rows = res.data;
+                if (a1) {
+                    rows = sliceRowsByA1(rows, a1);
+                }
+                setRows(rows);
             },
             error: (e) => alert('Failed to fetch CSV: ' + e)
         });
     });
-    el('loadText').addEventListener('click', () => {
-        parseCsvText(el('csvText').value);
-    });
 
-    function parseCsvText(text) {
+    el('loadText').addEventListener('click', () => {
+        const a1 = (el('gsRange') ?.value || '').trim(); // optional range even for pasted CSV
+        const text = el('csvText').value;
         Papa.parse(text, {
             header: true,
             dynamicTyping: true,
             skipEmptyLines: true,
             complete: (res) => {
-                setRows(res.data)
+                let rows = res.data;
+                if (a1) rows = sliceRowsByA1(rows, a1);
+                setRows(rows);
             }
         });
-    }
+    });
 
     function setRows(rows) {
         state.rows = rows || [];
         state.columns = state.rows.length ? Object.keys(state.rows[0]) : [];
-        for (const id of ['xCol', 'yCol', 'y2Col', 'groupCol']) fillSelect(id, state.columns);
+        for (const id of ['xCol', 'yCol', 'y2Col', 'groupCol', 'sbValueCol', 'sbLabelsCol', 'sbParentsCol']) {
+            fillSelect(id, state.columns);
+        }
+        fillMultiSelect('pathCols', state.columns);
         suggestMappings();
         buildColorPickers();
     }
 
     function fillSelect(id, options) {
         const s = el(id);
+        if (!s) return;
         s.innerHTML = '<option value="">(none)</option>' + options.map(c => `<option>${escapeHtml(c)}</option>`).join('');
+    }
+
+    function fillMultiSelect(id, options) {
+        const s = el(id);
+        if (!s) return;
+        s.innerHTML = options.map(c => `<option>${escapeHtml(c)}</option>`).join('');
     }
 
     function suggestMappings() {
         const cols = state.columns;
         if (!cols.length) return;
-        // simple heuristics
         const numericCols = cols.filter(c => isNumericColumn(state.rows, c));
-        const maybeLabel = cols.find(c => /country|name|label|category|type|month|date/i.test(c)) || cols[0];
+        const maybeLabel = cols.find(c => /country|name|label|category|type|month|date|region|city/i.test(c)) || cols[0];
         el('xCol').value = maybeLabel;
         el('yCol').value = numericCols[0] || cols[0];
         el('y2Col').value = numericCols[1] || '';
-        el('groupCol').value = cols.find(c => /group|gender|region|species|type/i.test(c)) || '';
+        el('groupCol').value = cols.find(c => /group|gender|region|species|type|tier|team/i.test(c)) || '';
+        // Sunburst quick guesses
+        el('sbLabelsCol').value = cols.find(c => /label|node|name/i.test(c)) || '';
+        el('sbParentsCol').value = cols.find(c => /parent|super|root/i.test(c)) || '';
+        el('sbValueCol').value = numericCols[0] || '';
     }
 
     function isNumericColumn(rows, col) {
@@ -94,7 +117,7 @@
         for (let i = 0; i < 6; i++) {
             const c = state.colors[i] || '#999999';
             const div = document.createElement('div');
-            div.innerHTML = `<label>Colour ${i+1}<input type="color" value="${c}" data-cidx="${i}" class="input" /></label>`;
+            div.innerHTML = `<label>Colour ${i + 1}<input type="color" value="${c}" data-cidx="${i}" class="input" /></label>`;
             wrap.appendChild(div);
         }
         wrap.querySelectorAll('input[type=color]').forEach(inp => {
@@ -114,7 +137,7 @@
         }).then(url => download(url, 'chart.png'));
     });
     el('copyEmbed').addEventListener('click', () => {
-        const code = `<div id=\"myChart\"></div>\n<script src=\"https://cdn.plot.ly/plotly-2.35.2.min.js\"><\/script>\n<script>Plotly.newPlot('myChart', ${JSON.stringify(currentData())}, ${JSON.stringify(currentLayout())});<\/script>`;
+        const code = `<div id="myChart"></div>\n<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"><\/script>\n<script>Plotly.newPlot('myChart', ${JSON.stringify(currentData())}, ${JSON.stringify(currentLayout())});<\/script>`;
         copy(code);
     });
     el('copyConfig').addEventListener('click', () => copy(el('configOut').value));
@@ -144,14 +167,25 @@
             xCol: el('xCol').value,
             yCol: el('yCol').value,
             groupCol: el('groupCol').value,
-            y2Col: el('y2Col').value
+            y2Col: el('y2Col').value,
+           
+            sbMode: el('sbMode') ?.value || 'path',
+            pathCols: Array.from(el('pathCols') ?.selectedOptions || []).map(o => o.value),
+            sbValueCol: el('sbValueCol') ?.value || '',
+            sbLabelsCol: el('sbLabelsCol') ?.value || '',
+            sbParentsCol: el('sbParentsCol') ?.value || ''
         };
     }
 
     function writeUI(u) {
         for (const [k, v] of Object.entries(u)) {
             const ctrl = el(k);
-            if (ctrl) ctrl.value = v ?? ctrl.value;
+            if (!ctrl) continue;
+            if (ctrl instanceof HTMLSelectElement && ctrl.multiple && Array.isArray(v)) {
+                for (const opt of ctrl.options) opt.selected = v.includes(opt.value);
+            } else {
+                ctrl.value = v ?? ctrl.value;
+            }
         }
     }
 
@@ -167,19 +201,31 @@
             responsive: true
         });
 
-        // Exportable config snippet (inline data for portability)
-        const mapping = {
-            x: ui.xCol,
-            y: ui.yCol
-        };
-        if (ui.groupCol) mapping.group = ui.groupCol;
+        // Exportable config snippet
+        const mapping = {};
+        if (ui.chartType === 'bar' || ui.chartType === 'line' || ui.chartType === 'scatter') {
+            mapping.x = ui.xCol;
+            mapping.y = ui.yCol;
+            if (ui.groupCol) mapping.group = ui.groupCol;
+        }
         if (ui.chartType === 'pie') {
             mapping.label = ui.xCol;
             if (ui.yCol) mapping.value = ui.yCol;
         }
         if (ui.chartType === 'combo') {
+            mapping.x = ui.xCol;
             mapping.bar = ui.yCol;
             mapping.line = ui.y2Col;
+        }
+        if (ui.chartType === 'sunburst') {
+            if (ui.sbMode === 'path') {
+                mapping.path = ui.pathCols;
+                if (ui.sbValueCol) mapping.value = ui.sbValueCol;
+            } else {
+                mapping.labels = ui.sbLabelsCol;
+                mapping.parents = ui.sbParentsCol;
+                if (ui.sbValueCol) mapping.values = ui.sbValueCol;
+            }
         }
 
         const config = {
@@ -187,7 +233,7 @@
             title: 'My Generated Chart',
             source: {
                 type: 'inline',
-                rows: state.rows.slice(0, 1000)
+                rows: state.rows.slice(0, 2000)
             },
             mapping,
             chart: {
@@ -211,13 +257,16 @@
         if (type === 'pie') return buildPie(ui, rows, colors, layout);
         if (type === 'scatter') return buildScatter(ui, rows, colors, layout);
         if (type === 'combo') return buildCombo(ui, rows, colors, layout);
+        if (type === 'sunburst') return buildSunburst(ui, rows, colors, layout); // NEW
         return {
             data: [],
             layout
         };
     }
 
+    // ----- Chart builders (existing) -----
     function buildBar(ui, rows, colors, layout) {
+        /* unchanged from your version */
         if (!ui.xCol || !ui.yCol) throw new Error('Need X and Y');
         let traces = [];
         let i = 0;
@@ -252,6 +301,7 @@
     }
 
     function buildLine(ui, rows, colors, layout) {
+        /* unchanged */
         if (!ui.xCol || !ui.yCol) throw new Error('Need X and Y');
         let traces = [];
         let i = 0;
@@ -295,6 +345,7 @@
     }
 
     function buildScatter(ui, rows, colors, layout) {
+        /* unchanged */
         if (!ui.xCol || !ui.yCol) throw new Error('Need X and Y');
         let traces = [];
         let i = 0;
@@ -332,6 +383,7 @@
     }
 
     function buildPie(ui, rows, colors, layout) {
+        /* unchanged */
         if (!ui.xCol) throw new Error('Need label column');
         let labels = [],
             values = [];
@@ -351,7 +403,7 @@
             values,
             textinfo: 'label+percent',
             marker: {
-                colors: colors
+                colors
             }
         };
         layout.showlegend = false;
@@ -362,6 +414,7 @@
     }
 
     function buildCombo(ui, rows, colors, layout) {
+        /* unchanged */
         if (!ui.xCol || !ui.yCol || !ui.y2Col) throw new Error('Need X, Y, and Y2');
         const bar = {
             type: 'bar',
@@ -393,6 +446,81 @@
         };
         return {
             data: [bar, line],
+            layout
+        };
+    }
+
+    // ----- NEW: Sunburst builder -----
+    function buildSunburst(ui, rows, colors, layout) {
+        let trace;
+        if (ui.sbMode === 'path') {
+            const path = Array.isArray(ui.pathCols) ? ui.pathCols.filter(Boolean) : [];
+            if (path.length < 2) throw new Error('Sunburst (path): select at least two path columns');
+            const valuesK = ui.sbValueCol || null;
+            const sep = ' / ';
+            const nodeMap = new Map(); // id -> {label, parent, value}
+            const getId = (parts) => parts.join(sep);
+
+            for (const r of rows) {
+                const parts = path.map(k => String(r[k] ?? ''));
+                for (let d = 0; d < parts.length; d++) {
+                    const label = parts[d];
+                    const id = getId(parts.slice(0, d + 1));
+                    const parent = d === 0 ? '' : getId(parts.slice(0, d));
+                    if (!nodeMap.has(id)) nodeMap.set(id, {
+                        label,
+                        parent,
+                        value: 0
+                    });
+                    if (d === parts.length - 1) {
+                        const inc = valuesK ? Number(r[valuesK]) || 0 : 1;
+                        nodeMap.get(id).value += inc;
+                    }
+                }
+            }
+            const labels = [],
+                parents = [],
+                values = [];
+            nodeMap.forEach(n => {
+                labels.push(n.label);
+                parents.push(n.parent || '');
+                values.push(n.value);
+            });
+            trace = {
+                type: 'sunburst',
+                labels,
+                parents,
+                values,
+                branchvalues: 'total',
+                marker: {
+                    colors
+                }
+            };
+        } else {
+            const labelsK = ui.sbLabelsCol,
+                parentsK = ui.sbParentsCol,
+                valuesK = ui.sbValueCol || null;
+            if (!labelsK || !parentsK) throw new Error('Sunburst (labels): choose Labels and Parents columns');
+            const labels = rows.map(r => r[labelsK]);
+            const parents = rows.map(r => r[parentsK] ?? '');
+            const values = valuesK ? rows.map(r => Number(r[valuesK]) || 0) : undefined;
+            trace = {
+                type: 'sunburst',
+                labels,
+                parents,
+                ...(values ? {
+                    values,
+                    branchvalues: 'total'
+                } : {}),
+                marker: {
+                    colors
+                }
+            };
+        }
+        layout.sunburstcolorway = colors;
+        layout.extendtreemapcolors = true;
+        return {
+            data: [trace],
             layout
         };
     }
@@ -468,7 +596,7 @@
             ">": "&gt;",
             "\"": "&quot;",
             "'": "&#39;"
-        } [c]))
+        } [c]));
     }
 
     function download(url, filename) {
@@ -491,15 +619,64 @@
         if (t === 'light') document.body.classList.add('light');
     }
 
-    function toGoogleCsvUrl(sheetUrl) {
+    // ---- Google Sheets URL helper (extended) ----
+    function toGoogleCsvUrl(sheetUrl, opts = {}) {
+        // If it's not a Google Sheets link, just return as-is
         try {
             const u = new URL(sheetUrl);
             const id = u.pathname.match(/\/d\/([a-zA-Z0-9-_]+)/) ?. [1];
             const gid = u.searchParams.get('gid');
-            if (!u.hostname.includes('docs.google.com') || !id) return sheetUrl;
-            return gid ? `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}` : `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv`;
+            const isSheet = u.hostname.includes('docs.google.com') && !!id;
+            if (!isSheet) return sheetUrl;
+
+            // base gviz CSV export
+            let url = gid ?
+                `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}` :
+                `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv`;
+
+            if (opts.tq) {
+                url += `&tq=${encodeURIComponent(opts.tq)}`;
+            }
+            return url;
         } catch {
-            return sheetUrl
+            return sheetUrl;
         }
+    }
+
+    // ---- A1 range slicer (client-side) ----
+    function sliceRowsByA1(rows, a1) {
+        // A1 like "A2:D20" (inclusive). We’ll interpret header row as row 1.
+        const m = String(a1).trim().match(/^([A-Z]+)(\d+):([A-Z]+)(\d+)$/i);
+        if (!m || !rows.length) return rows;
+        const [, c1, r1str, c2, r2str] = m;
+        const startCol = colLettersToIndex(c1);
+        const endCol = colLettersToIndex(c2);
+        const startRow = parseInt(r1str, 10);
+        const endRow = parseInt(r2str, 10);
+        if (startCol > endCol || startRow > endRow) return rows;
+
+        const headers = Object.keys(rows[0]); // order inferred from CSV header
+        const keepCols = headers.slice(startCol, endCol + 1);
+
+        // Data rows: header is row 1. So A2 means rows[0] is row2 → index startRow-2
+        const sliceStart = Math.max(0, startRow - 2);
+        const sliceEnd = Math.max(sliceStart, endRow - 2);
+
+        const sliced = rows.slice(sliceStart, sliceEnd + 1).map(r => {
+            const o = {};
+            for (const k of keepCols) o[k] = r[k];
+            return o;
+        });
+        return sliced;
+    }
+
+    function colLettersToIndex(letters) {
+        // 'A'->0, 'B'->1 ... 'Z'->25, 'AA'->26 ...
+        let n = 0;
+        const s = letters.toUpperCase();
+        for (let i = 0; i < s.length; i++) {
+            n = n * 26 + (s.charCodeAt(i) - 64);
+        }
+        return n - 1;
     }
 })();

@@ -83,6 +83,8 @@
                 <div class="or">or</div>
                 <input id="csvUrl" class="input" placeholder="Paste CSV URL or Google Sheets link" />
                 <button id="loadUrl" class="btn">Load from URL</button>
+                <input id="gsRange" class="input" placeholder="Google Sheets A1 range (e.g., A2:D20) — optional" />
+                <input id="gsTq" class="input" placeholder="tq query (e.g., select A,B where B > 0 limit 20) — optional" />
                 <details>
                     <summary>Paste CSV text</summary>
                     <textarea id="csvText" class="textarea" rows="6" placeholder=","
@@ -102,6 +104,7 @@
                         <option>pie</option>
                         <option>scatter</option>
                         <option value="combo">bar+line</option>
+                        <option>sunburst</option>
                     </select>
                 </label>
                 <label>Stack bars
@@ -122,6 +125,34 @@
                 </label>
                 <label>Second Y for combo
                     <select id="y2Col" class="input"></select>
+                </label>
+            </div>
+
+            <h2>Sunburst</h2>
+            <div class="grid grid-2">
+                <label>Mode
+                    <select id="sbMode" class="input">
+                        <option value="path">path (Region → Country → City)</option>
+                        <option value="labels">labels/parents</option>
+                    </select>
+                </label>
+
+                <div></div>
+
+                <!-- Path mode -->
+                <label>Path columns (hold Ctrl/Cmd to multi-select)
+                    <select id="pathCols" class="input" multiple size="6"></select>
+                </label>
+                <label>Value (optional)
+                    <select id="sbValueCol" class="input"></select>
+                </label>
+
+                <!-- Labels/Parents mode -->
+                <label>Labels column
+                    <select id="sbLabelsCol" class="input"></select>
+                </label>
+                <label>Parents column
+                    <select id="sbParentsCol" class="input"></select>
                 </label>
             </div>
 
