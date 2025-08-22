@@ -129,8 +129,8 @@
             }
         },
         {
-            "id": "pros-02-bully-types",
-            "title": "Total count of bullying by type and aggressor",
+            "id": "pros-02-bully-types-beatenup",
+            "title": "PROS-02 Total count: Beaten up",
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
@@ -138,12 +138,96 @@
                 "range": "B86:F92"
             },
             "mapping": {
-                "x": ["Non-furries", "Furries", "Both", "Unknown"],
-                "y": "Category"
+                "label": ["Non-furries", "Furries", "Both", "Unknown"],
+                "valueRow": "Beaten up"
             },
             "chart": {
-                "type": "bar",
-                "stacked": true
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bully-types-teased",
+            "title": "PROS-02 Total count: Teased",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "B86:F92"
+            },
+            "mapping": {
+                "label": ["Non-furries", "Furries", "Both", "Unknown"],
+                "valueRow": "Teased"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bully-types-ostracised",
+            "title": "PROS-02 Total count: Ostracised",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "B86:F92"
+            },
+            "mapping": {
+                "label": ["Non-furries", "Furries", "Both", "Unknown"],
+                "valueRow": "Ostracised"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bully-types-cyber",
+            "title": "PROS-02 Total count: Cyberbullied",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "B86:F92"
+            },
+            "mapping": {
+                "label": ["Non-furries", "Furries", "Both", "Unknown"],
+                "valueRow": "Cyberbullied"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bully-types-sex",
+            "title": "PROS-02 Total count: Sexually assaulted",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "B86:F92"
+            },
+            "mapping": {
+                "label": ["Non-furries", "Furries", "Both", "Unknown"],
+                "valueRow": "Sexually assaulted"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bully-types-things",
+            "title": "PROS-02 Total count: Property damage",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "B86:F92"
+            },
+            "mapping": {
+                "label": ["Non-furries", "Furries", "Both", "Unknown"],
+                "valueRow": "Property damage"
+            },
+            "chart": {
+                "type": "pie"
             }
         }
     ]
