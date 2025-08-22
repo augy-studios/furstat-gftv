@@ -24,7 +24,8 @@
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/REPLACE_ME/edit#gid=0",
-                "sheet": "Form Responses 1"
+                "sheet": "Form Responses 1",
+                "range": "A2:D20"
             },
             "mapping": {
                 "label": "Gender"

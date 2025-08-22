@@ -152,6 +152,9 @@
       if (sheetName) {
         return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
       }
+      if (sheetName && source.range) {
+        return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(source.range)}`;
+      }
       return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv`;
     } catch {
       return sheetUrl
