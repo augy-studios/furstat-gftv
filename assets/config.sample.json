@@ -55,7 +55,7 @@
                 }
             }
         },
-        
+
         {
             "id": "bar-basic",
             "title": "Attendees by Country — Bar",
@@ -91,7 +91,6 @@
                 }
             }
         },
-
         {
             "id": "bar-stacked-group",
             "title": "Ticket Tier by Region — Stacked Bar",
@@ -132,7 +131,6 @@
                 }
             }
         },
-
         {
             "id": "line-trend",
             "title": "Monthly Attendees — Line",
@@ -171,7 +169,6 @@
                 }
             }
         },
-
         {
             "id": "pie-gender",
             "title": "Gender Split — Pie",
@@ -204,7 +201,6 @@
                 }
             }
         },
-
         {
             "id": "scatter-age-vs-hours",
             "title": "Age vs Hours Volunteered — Scatter",
@@ -249,7 +245,6 @@
                 }
             }
         },
-
         {
             "id": "combo-attendees-vs-target",
             "title": "Attendees vs Target — Combo (Bar + Line)",
@@ -291,7 +286,6 @@
                 }
             }
         },
-
         {
             "id": "sunburst-path",
             "title": "Region → Country → City — Sunburst (path mapping)",
@@ -340,7 +334,6 @@
                 }
             }
         },
-
         {
             "id": "sunburst-labels-parents",
             "title": "Departments — Sunburst (labels/parents mapping)",
