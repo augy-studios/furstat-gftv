@@ -54,6 +54,351 @@
                     "colors": ["#22d3ee", "#f97316"]
                 }
             }
+        },
+        
+        {
+            "id": "bar-basic",
+            "title": "Attendees by Country — Bar",
+            "source": {
+                "type": "inline",
+                "rows": [{
+                        "Country": "Singapore",
+                        "Count": 120
+                    },
+                    {
+                        "Country": "Malaysia",
+                        "Count": 80
+                    },
+                    {
+                        "Country": "Indonesia",
+                        "Count": 45
+                    },
+                    {
+                        "Country": "Thailand",
+                        "Count": 35
+                    }
+                ]
+            },
+            "mapping": {
+                "x": "Country",
+                "y": "Count"
+            },
+            "chart": {
+                "type": "bar",
+                "stacked": false,
+                "options": {
+                    "colors": ["#60a5fa"]
+                }
+            }
+        },
+
+        {
+            "id": "bar-stacked-group",
+            "title": "Ticket Tier by Region — Stacked Bar",
+            "source": {
+                "type": "inline",
+                "rows": [{
+                        "Region": "SEA",
+                        "Tier": "Standard",
+                        "Sold": 140
+                    },
+                    {
+                        "Region": "SEA",
+                        "Tier": "VIP",
+                        "Sold": 30
+                    },
+                    {
+                        "Region": "EU",
+                        "Tier": "Standard",
+                        "Sold": 90
+                    },
+                    {
+                        "Region": "EU",
+                        "Tier": "VIP",
+                        "Sold": 25
+                    }
+                ]
+            },
+            "mapping": {
+                "x": "Region",
+                "y": "Sold",
+                "group": "Tier"
+            },
+            "chart": {
+                "type": "bar",
+                "stacked": true,
+                "options": {
+                    "colors": ["#60a5fa", "#34d399"]
+                }
+            }
+        },
+
+        {
+            "id": "line-trend",
+            "title": "Monthly Attendees — Line",
+            "source": {
+                "type": "inline",
+                "rows": [{
+                        "Month": "Jan",
+                        "Attendees": 120
+                    },
+                    {
+                        "Month": "Feb",
+                        "Attendees": 135
+                    },
+                    {
+                        "Month": "Mar",
+                        "Attendees": 150
+                    },
+                    {
+                        "Month": "Apr",
+                        "Attendees": 145
+                    },
+                    {
+                        "Month": "May",
+                        "Attendees": 160
+                    }
+                ]
+            },
+            "mapping": {
+                "x": "Month",
+                "y": "Attendees"
+            },
+            "chart": {
+                "type": "line",
+                "options": {
+                    "colors": ["#22d3ee"]
+                }
+            }
+        },
+
+        {
+            "id": "pie-gender",
+            "title": "Gender Split — Pie",
+            "source": {
+                "type": "inline",
+                "rows": [{
+                        "Gender": "Male"
+                    },
+                    {
+                        "Gender": "Female"
+                    },
+                    {
+                        "Gender": "Female"
+                    },
+                    {
+                        "Gender": "Non-binary"
+                    },
+                    {
+                        "Gender": "Male"
+                    }
+                ]
+            },
+            "mapping": {
+                "label": "Gender"
+            },
+            "chart": {
+                "type": "pie",
+                "options": {
+                    "colors": ["#60a5fa", "#f472b6", "#fbbf24", "#34d399"]
+                }
+            }
+        },
+
+        {
+            "id": "scatter-age-vs-hours",
+            "title": "Age vs Hours Volunteered — Scatter",
+            "source": {
+                "type": "inline",
+                "rows": [{
+                        "Age": 18,
+                        "Hours": 5,
+                        "Group": "Ops"
+                    },
+                    {
+                        "Age": 22,
+                        "Hours": 9,
+                        "Group": "Ops"
+                    },
+                    {
+                        "Age": 25,
+                        "Hours": 6,
+                        "Group": "Safety"
+                    },
+                    {
+                        "Age": 30,
+                        "Hours": 12,
+                        "Group": "Safety"
+                    },
+                    {
+                        "Age": 28,
+                        "Hours": 7,
+                        "Group": "Reg"
+                    }
+                ]
+            },
+            "mapping": {
+                "x": "Age",
+                "y": "Hours",
+                "group": "Group"
+            },
+            "chart": {
+                "type": "scatter",
+                "options": {
+                    "colors": ["#60a5fa", "#34d399", "#fbbf24"]
+                }
+            }
+        },
+
+        {
+            "id": "combo-attendees-vs-target",
+            "title": "Attendees vs Target — Combo (Bar + Line)",
+            "source": {
+                "type": "inline",
+                "rows": [{
+                        "Month": "Jan",
+                        "Attendees": 120,
+                        "Target": 100
+                    },
+                    {
+                        "Month": "Feb",
+                        "Attendees": 135,
+                        "Target": 110
+                    },
+                    {
+                        "Month": "Mar",
+                        "Attendees": 150,
+                        "Target": 120
+                    },
+                    {
+                        "Month": "Apr",
+                        "Attendees": 145,
+                        "Target": 130
+                    }
+                ]
+            },
+            "mapping": {
+                "x": "Month",
+                "bar": "Attendees",
+                "line": "Target"
+            },
+            "chart": {
+                "type": "combo",
+                "barName": "Attendees",
+                "lineName": "Target",
+                "options": {
+                    "colors": ["#22d3ee", "#f97316"]
+                }
+            }
+        },
+
+        {
+            "id": "sunburst-path",
+            "title": "Region → Country → City — Sunburst (path mapping)",
+            "source": {
+                "type": "inline",
+                "rows": [{
+                        "Region": "SEA",
+                        "Country": "Singapore",
+                        "City": "Singapore",
+                        "Headcount": 120
+                    },
+                    {
+                        "Region": "SEA",
+                        "Country": "Malaysia",
+                        "City": "KL",
+                        "Headcount": 80
+                    },
+                    {
+                        "Region": "SEA",
+                        "Country": "Malaysia",
+                        "City": "Penang",
+                        "Headcount": 30
+                    },
+                    {
+                        "Region": "EU",
+                        "Country": "Germany",
+                        "City": "Berlin",
+                        "Headcount": 60
+                    },
+                    {
+                        "Region": "EU",
+                        "Country": "Germany",
+                        "City": "Munich",
+                        "Headcount": 55
+                    }
+                ]
+            },
+            "mapping": {
+                "path": ["Region", "Country", "City"],
+                "value": "Headcount"
+            },
+            "chart": {
+                "type": "sunburst",
+                "options": {
+                    "colors": ["#60a5fa", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#f87171"]
+                }
+            }
+        },
+
+        {
+            "id": "sunburst-labels-parents",
+            "title": "Departments — Sunburst (labels/parents mapping)",
+            "source": {
+                "type": "inline",
+                "rows": [{
+                        "Label": "All",
+                        "Parent": "",
+                        "Val": 0
+                    },
+                    {
+                        "Label": "Ops",
+                        "Parent": "All",
+                        "Val": 50
+                    },
+                    {
+                        "Label": "Safety",
+                        "Parent": "All",
+                        "Val": 35
+                    },
+                    {
+                        "Label": "Reg",
+                        "Parent": "All",
+                        "Val": 25
+                    },
+                    {
+                        "Label": "Ops A",
+                        "Parent": "Ops",
+                        "Val": 30
+                    },
+                    {
+                        "Label": "Ops B",
+                        "Parent": "Ops",
+                        "Val": 20
+                    },
+                    {
+                        "Label": "Safety A",
+                        "Parent": "Safety",
+                        "Val": 18
+                    },
+                    {
+                        "Label": "Safety B",
+                        "Parent": "Safety",
+                        "Val": 17
+                    }
+                ]
+            },
+            "mapping": {
+                "labels": "Label",
+                "parents": "Parent",
+                "values": "Val"
+            },
+            "chart": {
+                "type": "sunburst",
+                "options": {
+                    "colors": ["#60a5fa", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#f87171"]
+                }
+            }
         }
     ]
 }

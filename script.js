@@ -173,6 +173,7 @@
     if (type === 'pie') return buildPie(chart, rows, palette, title, csvOut);
     if (type === 'scatter') return buildScatter(chart, rows, palette, title, csvOut);
     if (type === 'combo') return buildCombo(chart, rows, palette, title, csvOut);
+    if (type === 'sunburst') return buildSunburst(chart, rows, palette, title, csvOut);
     throw new Error(`Unsupported chart type: ${type}`);
   }
 
@@ -383,6 +384,95 @@
     };
     return {
       data: [bar, line],
+      layout,
+      csvOut
+    };
+  }
+
+  function buildSunburst(chart, rows, palette, title, csvOut) {
+    const m = chart.mapping || {};
+    const labelsK = m.labels || m.label;
+    const parentsK = m.parents || m.parent;
+    const valuesK = m.values || m.value;
+    const path = m.path; // optional: array of columns for hierarchical path, e.g. ["Region","Country","City"]
+
+    let trace;
+
+    if (Array.isArray(path) && path.length >= 2) {
+      // Build (labels, parents, values) from a path of columns
+      // If valuesK is provided, sum it; else count rows per leaf.
+      const sep = ' / ';
+      const nodeMap = new Map(); // id -> {label, parent, value}
+      const getId = (parts) => parts.join(sep);
+
+      for (const r of rows) {
+        const parts = path.map(k => String(r[k] ?? ''));
+        // Build nodes for each depth
+        for (let d = 0; d < parts.length; d++) {
+          const label = parts[d];
+          const id = getId(parts.slice(0, d + 1));
+          const parent = d === 0 ? '' : getId(parts.slice(0, d));
+
+          if (!nodeMap.has(id)) nodeMap.set(id, {
+            label,
+            parent,
+            value: 0
+          });
+          // Only add value at the leaf level
+          if (d === parts.length - 1) {
+            const inc = valuesK ? Number(r[valuesK]) || 0 : 1;
+            nodeMap.get(id).value += inc;
+          }
+        }
+      }
+
+      const labels = [],
+        parents = [],
+        values = [];
+      nodeMap.forEach(n => {
+        labels.push(n.label);
+        parents.push(n.parent || '');
+        values.push(n.value);
+      });
+
+      trace = {
+        type: 'sunburst',
+        labels,
+        parents,
+        values,
+        branchvalues: 'total',
+        marker: {
+          colors: palette
+        }
+      };
+    } else if (labelsK && parentsK) {
+      // Direct labels/parents (+ optional values) mapping
+      const labels = rows.map(r => r[labelsK]);
+      const parents = rows.map(r => r[parentsK] ?? '');
+      const values = valuesK ? rows.map(r => Number(r[valuesK]) || 0) : undefined;
+
+      trace = {
+        type: 'sunburst',
+        labels,
+        parents,
+        ...(values ? {
+          values,
+          branchvalues: 'total'
+        } : {}),
+        marker: {
+          colors: palette
+        }
+      };
+    } else {
+      throw new Error('Sunburst requires either mapping.path (array) OR mapping.labels/parents with optional values');
+    }
+
+    const layout = baseLayout(title);
+    layout.sunburstcolorway = palette;
+    layout.extendtreemapcolors = true;
+
+    return {
+      data: [trace],
       layout,
       csvOut
     };
