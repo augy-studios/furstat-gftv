@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FMCYFTFPEL"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-FMCYFTFPEL');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9715826188316382"
+        crossorigin="anonymous"></script>
+
+    <link rel="manifest" href="../manifest.json" />
+
+    <meta charset="utf-8">
+    <title>Furstat GFTV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Furstat GFTV" />
+    <meta property="og:site_name" content="Furstat GFTV" />
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Comfortaa">
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- Embed Image -->
+    <link rel="apple-touch-icon" href="/GFTV.png">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image:src" content="/GFTV.png">
+    <meta property="og:image" content="/GFTV.png" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <script defer="" src="https://use.fontawesome.com/releases/v7.0.0/js/all.js"></script>
+
+    <script>
+        function playNggyu() {
+            var audio = document.getElementById("audio");
+            audio.play();
+        }
+    </script>
+</head>
+
+<body>
+    <div class="shell">
+        <header>
+            <div class="brand">
+                <div class="logo">🏳️</div>
+                <div>
+                    <div class="big">Flag Match</div>
+                    <div class="hint">Guess the country from its flag — 20 questions per round</div>
+                </div>
+            </div>
+            <div class="panel controls">
+                <select id="region">
+                    <option value="All">All regions</option>
+                    <option value="Africa">Africa</option>
+                    <option value="Americas">Americas</option>
+                    <option value="Asia">Asia</option>
+                    <option value="Europe">Europe</option>
+                    <option value="Oceania">Oceania</option>
+                </select>
+                <select id="mode">
+                    <option value="mc4">Multiple choice (4)</option>
+                    <option value="mc6">Multiple choice (6)</option>
+                </select>
+                <button id="restart" class="primary">Restart</button>
+                <button id="skip" class="ghost">Skip</button>
+            </div>
+        </header>
+
+        <section class="main">
+            <div class="panel flagcard">
+                <div class="flagwrap">
+                    <img id="flag" class="flag" alt="Country flag" />
+                    <div id="loader" class="loader">Loading flag…</div>
+                </div>
+                <div id="answers" class="answers"></div>
+            </div>
+
+            <aside class="sidebar">
+                <div class="panel card">
+                    <div class="flex">
+                        <div>
+                            <div class="title">Progress</div>
+                            <div class="row"><span id="qnum" class="big">1</span><span class="muted">/ 20</span></div>
+                        </div>
+                        <div class="pill">Streak: <span id="streak">0</span></div>
+                    </div>
+                    <div class="bar" style="margin-top:12px"><span id="progress"></span></div>
+                </div>
+
+                <div class="panel card">
+                    <div class="title">Score</div>
+                    <div class="row" style="align-items:baseline">
+                        <div class="big" id="score">0</div>
+                        <div class="muted">High score: <strong id="best">0</strong></div>
+                    </div>
+                </div>
+
+                <div class="panel card">
+                    <div class="title">How to play</div>
+                    <div class="hint">
+                        • Pick the correct country name.<br />
+                        • Keyboard: <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span>
+                        <span class="kbd">4</span> (and <span class="kbd">5</span> <span class="kbd">6</span> if 6
+                        choices).<br />
+                        • <span class="kbd">N</span> or <span class="kbd">Enter</span> to skip/next.
+                    </div>
+                </div>
+
+                <div class="panel foot">
+                    <a class="source" href="https://restcountries.com" target="_blank" rel="noreferrer">REST Countries
+                        API</a>
+                </div>
+            </aside>
+        </section>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+
+</html>
