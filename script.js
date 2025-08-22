@@ -112,7 +112,7 @@
       return parseCsvFromUrl(source.path);
     }
     if ((source.type === 'google_sheet' || source.type === 'google_form') && (source.url || source.sheetUrl)) {
-      const url = toGoogleCsvUrl(source.url || source.sheetUrl, source.sheet);
+      const url = toGoogleCsvUrl(source);
       return parseCsvFromUrl(url);
     }
     if (source.type === 'url' && source.url) {
@@ -137,27 +137,44 @@
     });
   }
 
-  function toGoogleCsvUrl(sheetUrl, sheetName) {
+  function toGoogleCsvUrl(source) {
+    // Expecting: source.url (or sheetUrl), optional source.sheet, optional source.range
+    const sheetUrl = source.url || source.sheetUrl;
+    const sheetName = source.sheet;
+    const range = source.range;
+
     try {
       const u = new URL(sheetUrl);
       const isSheet = u.hostname.includes('docs.google.com');
-      if (!isSheet) return sheetUrl; // assume direct CSV URL
+      if (!isSheet) return sheetUrl; // assume it's already a direct CSV URL
+
+      // Extract doc id and gid (if present)
       const idMatch = u.pathname.match(/\/d\/([a-zA-Z0-9-_]+)/);
       const id = idMatch ? idMatch[1] : null;
       const gid = u.searchParams.get('gid');
+
       if (!id) return sheetUrl;
+
+      // Base CSV export
+      const base = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv`;
+
+      // Priority:
+      // 1) If range is provided AND a sheet name is given, use sheet+range (most precise).
+      // 2) Else if gid exists, use gid (targets that tab).
+      // 3) Else if only sheet name is given, use sheet.
+      // 4) Fallback: whole spreadsheet default export.
+      if (range && sheetName) {
+        return `${base}&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
+      }
       if (gid) {
-        return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`;
+        return `${base}&gid=${encodeURIComponent(gid)}`;
       }
       if (sheetName) {
-        return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+        return `${base}&sheet=${encodeURIComponent(sheetName)}`;
       }
-      if (sheetName && source.range) {
-        return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(source.range)}`;
-      }
-      return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv`;
+      return base;
     } catch {
-      return sheetUrl
+      return sheetUrl;
     }
   }
 
