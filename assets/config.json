@@ -229,6 +229,40 @@
             "chart": {
                 "type": "pie"
             }
+        },
+        {
+            "id": "pros-02-bullied-bef",
+            "title": "PROS-02 Bullied before joining furry fandom?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "B113:D115"
+            },
+            "mapping": {
+                "label": ["Yes", "No"],
+                "valueRow": "Before"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bullied-aft",
+            "title": "PROS-02 Bullied after joining furry fandom?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "B113:D115"
+            },
+            "mapping": {
+                "label": ["Yes", "No"],
+                "valueRow": "After"
+            },
+            "chart": {
+                "type": "pie"
+            }
         }
     ]
 }
