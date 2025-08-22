@@ -486,3 +486,5 @@
     } [c]))
   }
 })();
+
+loadDefaultConfig();
