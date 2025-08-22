@@ -1,16 +1,16 @@
 {
     "charts": [
         {
-            "id": "gender-split",
-            "title": "Gender Split (Sample)",
+            "id": "pros-02-aft-bullies",
+            "title": "AFT Were your bullies furries or non-furries? (Sample)",
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
                 "sheet": "Global",
-                "range": "A1:B21"
+                "range": "A1:A21"
             },
             "mapping": {
-                "label": "Gender"
+                "label": "As far as you know, were your bullies furries?"
             },
             "chart": {
                 "type": "pie"
