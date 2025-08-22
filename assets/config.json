@@ -127,6 +127,24 @@
             "chart": {
                 "type": "pie"
             }
+        },
+        {
+            "id": "pros-02-bully-types",
+            "title": "Total count of bullying by type and aggressor",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "B86:F92"
+            },
+            "mapping": {
+                "x": ["Beaten up", "Teased", "Ostracised", "Cyberbullied", "Sexually assaulted", "Property damage"],
+                "y": ["Non-furries", "Furries", "Both", "Unknown"]
+            },
+            "chart": {
+                "type": "bar",
+                "stacked": true
+            }
         }
     ]
 }
