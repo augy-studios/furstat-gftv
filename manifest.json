@@ -7,8 +7,8 @@
         "sizes": "256x256"
     }],
     "start_url": ".",
-    "theme_color": "#9f9",
-    "background_color": "#9f9",
+    "theme_color": "#fedc00",
+    "background_color": "#fedc00",
     "display": "standalone",
     "display_override": ["fullscreen", "minimal-ui"],
     "description": "Save this to access the Furstat GFTV website in your home screen!"
