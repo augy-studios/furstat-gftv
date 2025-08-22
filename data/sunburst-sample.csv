@@ -1,0 +1,13 @@
+Region,Country,City,Headcount
+Asia,Japan,Tokyo,120
+Asia,Japan,Osaka,80
+Asia,China,Beijing,100
+Asia,China,Shanghai,90
+Europe,Germany,Berlin,70
+Europe,Germany,Munich,60
+Europe,France,Paris,110
+Europe,France,Lyon,50
+North America,USA,New York,150
+North America,USA,San Francisco,130
+North America,Canada,Toronto,90
+North America,Canada,Vancouver,70

@@ -6,7 +6,8 @@
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0",
-                "sheet": "Countries"
+                "sheet": "Countries",
+                "range": "A2:D20"
             },
             "mapping": {
                 "x": "Country",
@@ -26,7 +27,8 @@
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0",
-                "sheet": "Tiers"
+                "sheet": "Tiers",
+                "range": "A2:D20"
             },
             "mapping": {
                 "x": "Region",
@@ -47,7 +49,8 @@
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0",
-                "sheet": "Monthly"
+                "sheet": "Monthly",
+                "range": "A2:D20"
             },
             "mapping": {
                 "x": "Month",
@@ -66,7 +69,8 @@
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0",
-                "sheet": "Form Responses 1"
+                "sheet": "Form Responses 1",
+                "range": "A2:D20"
             },
             "mapping": {
                 "label": "Gender"
@@ -84,7 +88,8 @@
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0",
-                "sheet": "VolunteerHours"
+                "sheet": "VolunteerHours",
+                "range": "A2:D20"
             },
             "mapping": {
                 "x": "Age",
@@ -104,7 +109,8 @@
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0",
-                "sheet": "Targets"
+                "sheet": "Targets",
+                "range": "A2:D20"
             },
             "mapping": {
                 "x": "Month",
@@ -126,7 +132,8 @@
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0",
-                "sheet": "GeoHierarchy"
+                "sheet": "GeoHierarchy",
+                "range": "A2:D20"
             },
             "mapping": {
                 "path": ["Region", "Country", "City"],
@@ -145,7 +152,8 @@
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0",
-                "sheet": "Departments"
+                "sheet": "Departments",
+                "range": "A2:D20"
             },
             "mapping": {
                 "labels": "Label",

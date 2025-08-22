@@ -54,6 +54,25 @@
                     "colors": ["#22d3ee", "#f97316"]
                 }
             }
+        },
+        {
+            "id": "sunburst-sample",
+            "title": "Attendees by Region, Country, and City",
+            "source": {
+                "type": "csv",
+                "url": "data/sunburst-sample.csv"
+            },
+            "mapping": {
+                "path": ["Region", "Country", "City"],
+                "value": "Headcount"
+            },
+            "chart": {
+                "type": "sunburst",
+                "options": {
+                    "colors": ["#60a5fa", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#f87171"]
+                }
+            }
         }
+
     ]
 }
