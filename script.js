@@ -331,37 +331,93 @@
 
   function buildPie(chart, rows, palette, title, csvOut) {
     const m = chart.mapping || {};
-    const lK = m.label || m.x,
-      vK = m.value || m.y;
-    if (!lK) throw new Error('Pie chart requires mapping.label (or mapping.x)');
-    let labels = [],
-      values = [];
-    if (vK) {
-      labels = rows.map(r => r[lK]);
-      values = rows.map(r => toNum(r[vK]));
-    } else {
-      const counts = countBy(rows, r => r[lK]);
+    const labelsSpec = m.label || m.labels || m.x; // allow 'label' or 'labels' or 'x'
+    const valueSpec = m.value || m.values || m.y;
+    const valueRow = m.valueRow; // NEW: name of the row to extract values from (wide → pie)
+    const rowKeyName = m.rowKey || Object.keys(rows[0] || {})[0]; // NEW: column used to locate that row (default: first column)
+
+    // --- NEW: Wide-table mode: label is an ARRAY and valueRow is provided ---
+    if (Array.isArray(labelsSpec) && valueRow) {
+      // Find the single row whose rowKey column equals valueRow
+      const match = rows.find(r => String(r[rowKeyName]) === String(valueRow));
+      if (!match) {
+        throw new Error(`Pie (wide): could not find row "${valueRow}" in column "${rowKeyName}"`);
+      }
+
+      // Slices are the listed label columns; values come from that row's cells
+      const labels = labelsSpec.slice();
+      const values = labels.map(col => toNum(match[col]));
+
+      const trace = {
+        type: 'pie',
+        labels,
+        values,
+        textinfo: 'label+percent',
+        marker: {
+          colors: palette
+        }
+      };
+      const layout = baseLayout(title);
+      layout.showlegend = false;
+      return {
+        data: [trace],
+        layout,
+        csvOut
+      };
+    }
+
+    // --- Existing behaviors remain unchanged ---
+
+    // Long/tidy mode: value column explicitly provided → one row = one slice
+    if (labelsSpec && valueSpec) {
+      const labels = rows.map(r => r[labelsSpec]);
+      const values = rows.map(r => toNum(r[valueSpec]));
+      const trace = {
+        type: 'pie',
+        labels,
+        values,
+        textinfo: 'label+percent',
+        marker: {
+          colors: palette
+        }
+      };
+      const layout = baseLayout(title);
+      layout.showlegend = false;
+      return {
+        data: [trace],
+        layout,
+        csvOut
+      };
+    }
+
+    // Count mode: no value column → count occurrences per label
+    if (labelsSpec) {
+      const labels = [];
+      const values = [];
+      const counts = countBy(rows, r => r[labelsSpec]);
       for (const [k, v] of counts) {
         labels.push(String(k));
         values.push(v);
       }
+      const trace = {
+        type: 'pie',
+        labels,
+        values,
+        textinfo: 'label+percent',
+        marker: {
+          colors: palette
+        }
+      };
+      const layout = baseLayout(title);
+      layout.showlegend = false;
+      return {
+        data: [trace],
+        layout,
+        csvOut
+      };
     }
-    const trace = {
-      type: 'pie',
-      labels,
-      values,
-      textinfo: 'label+percent',
-      marker: {
-        colors: palette
-      }
-    };
-    const layout = baseLayout(title);
-    layout.showlegend = false;
-    return {
-      data: [trace],
-      layout,
-      csvOut
-    };
+
+    throw new Error('Pie chart requires mapping.label (or labels) — or labels[] with valueRow for wide tables');
   }
 
   function buildCombo(chart, rows, palette, title, csvOut) {
