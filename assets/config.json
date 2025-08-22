@@ -2,7 +2,7 @@
     "charts": [
         {
             "id": "pros-02-aft-bullies",
-            "title": "AFT Were your bullies furries or non-furries? (Sample)",
+            "title": "PROS-02 AFT Were your bullies furries?",
             "source": {
                 "type": "google_sheet",
                 "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
@@ -11,6 +11,118 @@
             },
             "mapping": {
                 "label": "As far as you know, were your bullies furries?"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-aft-bullies-furry-cyber",
+            "title": "PROS-02 AFT Furry bullies: Cyberbullies?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "I17:I22"
+            },
+            "mapping": {
+                "label": "Cyberbullied?"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-aft-bullies-nonfurry-cyber",
+            "title": "PROS-02 AFT Non-Furry bullies: Cyberbullies?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "M17:M24"
+            },
+            "mapping": {
+                "label": "Cyberbullied?"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-aft-bullies-bothfurry-cyber",
+            "title": "PROS-02 AFT Both Furry and Non-Furry bullies: Cyberbullies?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "R17:R24"
+            },
+            "mapping": {
+                "label": "Cyberbullied?"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bef-bullies",
+            "title": "PROS-02 BEF Were your bullies furries?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "A27:A80"
+            },
+            "mapping": {
+                "label": "As far as you know, were your bullies furries?"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bef-bullies-furry-cyber",
+            "title": "PROS-02 BEF Furry bullies: Cyberbullies?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "I44:I45"
+            },
+            "mapping": {
+                "label": "Cyberbullied?"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bef-bullies-nonfurry-cyber",
+            "title": "PROS-02 BEF Non-Furry bullies: Cyberbullies?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "M44:M82"
+            },
+            "mapping": {
+                "label": "Cyberbullied?"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        },
+        {
+            "id": "pros-02-bef-bullies-bothfurry-cyber",
+            "title": "PROS-02 BEF Both Furry and Non-Furry bullies: Cyberbullies?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "R44:R49"
+            },
+            "mapping": {
+                "label": "Cyberbullied?"
             },
             "chart": {
                 "type": "pie"
