@@ -1,29 +1,13 @@
 {
-    "charts": [{
-            "id": "attendees-by-country",
-            "title": "Attendees by Country (Sample)",
-            "source": {
-                "type": "csv",
-                "path": "/data/attendees_by_country.csv"
-            },
-            "mapping": {
-                "x": "Country",
-                "y": "Count"
-            },
-            "chart": {
-                "type": "bar",
-                "stacked": false,
-                "options": {
-                    "colors": ["#60a5fa", "#34d399", "#fbbf24", "#f472b6"]
-                }
-            }
-        },
+    "charts": [
         {
             "id": "gender-split",
             "title": "Gender Split (Sample)",
             "source": {
-                "type": "csv",
-                "path": "/data/form_responses_sample.csv"
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "A1:B21"
             },
             "mapping": {
                 "label": "Gender"
@@ -33,23 +17,20 @@
             }
         },
         {
-            "id": "trend-vs-target",
-            "title": "Monthly Attendees vs Target (Sample)",
+            "id": "sunburst-sample",
+            "title": "Attendees by Region, Country, and City",
             "source": {
                 "type": "csv",
-                "path": "/data/trend.csv"
+                "url": "data/sunburst-sample.csv"
             },
             "mapping": {
-                "x": "Month",
-                "bar": "Attendees",
-                "line": "Target"
+                "path": ["Region", "Country", "City"],
+                "value": "Headcount"
             },
             "chart": {
-                "type": "combo",
-                "barName": "Attendees",
-                "lineName": "Target",
+                "type": "sunburst",
                 "options": {
-                    "colors": ["#22d3ee", "#f97316"]
+                    "colors": ["#60a5fa", "#34d399", "#fbbf24", "#f472b6", "#a78bfa", "#f87171"]
                 }
             }
         }
