@@ -56,28 +56,40 @@
 <body>
     <div class="bg"></div>
 
-    <header class="topbar">
+    <header class="site-header" role="banner">
         <div class="brand">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 3c4 0 7 3 7 7 0 3-2 6-5 8l-2 3-2-3c-3-2-5-5-5-8 0-4 3-7 7-7Z" stroke="currentColor"
-                    stroke-width="1.5" />
-                <path
-                    d="M9.5 10.5c.7 0 1.25-.56 1.25-1.25S10.2 8 9.5 8 8.25 8.56 8.25 9.25 8.8 10.5 9.5 10.5Zm5 0c.7 0 1.25-.56 1.25-1.25S15.2 8 14.5 8 13.25 8.56 13.25 9.25 13.8 10.5 14.5 10.5Z"
-                    fill="currentColor" /></svg>
-            <span>GFTV Furry Stats Hub</span>
+            <div class="logo" aria-hidden="true">🦊</div>
+            <div>
+                <h1 class="title">GFTV Furry Stats Hub</h1>
+                <p class="subtitle">The home for all furry statistics</p>
+            </div>
         </div>
-        <nav class="nav">
-            <a href="/playground" class="btn">Playground</a>
-            <button id="themeToggle" class="icon-btn" title="Toggle theme">🌗</button>
-        </nav>
+
+        <div class="controls" role="search">
+            <label class="search">
+                <input id="search" type="search" placeholder="Search for stats, tags, or descriptions…"
+                    aria-label="Search…" />
+                <span class="kbd" aria-hidden="true">/</span>
+            </label>
+            <div id="tags" class="tags" aria-label="Tag filters"></div>
+        </div>
     </header>
 
-    <main class="container">
-        <section id="dashboard" class="grid"></section>
+    <main class="content" id="content" tabindex="-1">
+        <section id="sections"></section>
+        <div id="empty" class="empty hidden" role="status" aria-live="polite">
+            <div class="empty-emoji" aria-hidden="true">🦝</div>
+            <p>No matches. Try a different search or clear filters.</p>
+            <button id="clearFilters" class="btn" type="button">Clear filters</button>
+        </div>
     </main>
 
-    <footer class="footer">
-        <span>Made with ❤️ by Global Furry Television Intl &copy; 2025</span>
+    <footer class="site-footer">
+        Made with ❤️ by
+        <div class="footer-left">© <span id="year"></span> Global Furry Television Intl</div>
+        <div class="footer-right">
+            <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme">🌙</button>
+        </div>
     </footer>
 
     <script src="/script.js"></script>

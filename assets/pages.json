@@ -1,0 +1,38 @@
+{
+    "sections": [{
+            "title": "Popular",
+            "items": [
+                {
+                    "id": "pros-01",
+                    "title": "PROS-01 | GFTV Furry Stats Hub",
+                    "href": "/pros-01",
+                    "desc": "COVID-19",
+                    "icon": "heart",
+                    "tags": ["global", "pandemic", "covid-19", "covid"],
+                    "accent": "#fedc00",
+                    "new": false
+                },
+                {
+                    "id": "pros-02",
+                    "title": "PROS-02 | GFTV Furry Stats Hub",
+                    "href": "/pros-02",
+                    "desc": "Bullying",
+                    "icon": "heart",
+                    "tags": ["bullying", "cyberbullying", "furries", "non-furries"],
+                    "accent": "#fedc00",
+                    "new": true
+                },
+                {
+                    "id": "pros-03",
+                    "title": "PROS-03 | GFTV Furry Stats Hub",
+                    "href": "/pros-03",
+                    "desc": "Experiences and Opinion on Bullying",
+                    "icon": "heart",
+                    "tags": ["bullying", "cyberbullying", "furries", "non-furries"],
+                    "accent": "#fedc00",
+                    "new": false
+                }
+            ]
+        }
+    ]
+}

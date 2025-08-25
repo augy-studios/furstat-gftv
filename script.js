@@ -1,640 +1,234 @@
-(function () {
-  const dashboardEl = document.getElementById('dashboard');
-  const themeToggle = document.getElementById('themeToggle');
+const Icons = {
+  trophy: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M7 21h10v-2H7v2Zm5-4a5 5 0 0 0 5-5V5h2a2 2 0 0 1 2 2v1a5 5 0 0 1-4 4.9A7 7 0 0 1 13 17h-2a7 7 0 0 1-4-4.1A5 5 0 0 1 3 8V7a2 2 0 0 1 2-2h2v7a5 5 0 0 0 5 5Zm7-10V7h-2v2.6A3 3 0 0 0 19 7ZM5 9.6V7H3v1a3 3 0 0 0 2 1.6Z"/></svg>`,
+  chart: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M3 3h2v18H3V3Zm16 6h2v12h-2V9ZM9 13h2v8H9v-8Zm4-10h2v18h-2V3Z"/></svg>`,
+  map: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M15 4.5 9 3 3 4.5v15L9 18l6 1.5 6-1.5v-15L15 6V4.5ZM9 5.3l4 1V18.7l-4-1V5.3ZM5 6.1 7 5.6V17.9L5 18.4V6.1Zm14 11.5-2 .5V5.9l2-.5v12.2Z"/></svg>`,
+  heart: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.3-9.7-8.4A5.6 5.6 0 0 1 12 6a5.6 5.6 0 0 1 9.7 6.6C19.5 16.7 12 21 12 21Z"/></svg>`,
+  clock: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 22A10 10 0 1 1 22 12 10 10 0 0 1 12 22Zm1-10V7h-2v7h6v-2h-4Z"/></svg>`
+};
 
-  const DEFAULTS = {
-    configCandidates: ['assets/config.json', 'assets/config.sample.json'],
-    palette: ['#60a5fa', '#34d399', '#fbbf24', '#f472b6', '#a78bfa', '#f87171', '#22d3ee', '#fb923c']
-  };
+const $ = (sel, p = document) => p.querySelector(sel);
+const $$ = (sel, p = document) => Array.from(p.querySelectorAll(sel));
 
-  initTheme();
-  bindUI();
-  loadDefaultConfig();
+const state = {
+  data: {
+    sections: []
+  },
+  tags: new Set(),
+  activeTags: new Set(),
+  q: "",
+};
 
-  function bindUI() {
-    if (themeToggle) {
-      themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('light');
-        localStorage.setItem('fs_theme', document.body.classList.contains('light') ? 'light' : 'dark');
-      });
+function icon(name) {
+  return Icons[name] || Icons.chart;
+}
+
+function tagChip(tag) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "tag";
+  b.innerHTML = `#${tag} <span class="x" aria-hidden="true">×</span>`;
+  b.setAttribute("aria-pressed", state.activeTags.has(tag) ? "true" : "false");
+  b.addEventListener("click", () => {
+    if (state.activeTags.has(tag)) state.activeTags.delete(tag);
+    else state.activeTags.add(tag);
+    render();
+  });
+  return b;
+}
+
+function card(item) {
+  const a = document.createElement("article");
+  a.className = "card";
+  a.tabIndex = 0;
+  a.setAttribute("role", "link");
+  a.setAttribute("aria-label", item.title);
+  a.addEventListener("click", () => window.location.href = item.href);
+  a.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      window.location.href = item.href;
     }
+  });
+
+  const accent = item.accent || "var(--accent)";
+  a.innerHTML = `
+    <div class="icon" style="color:${accent}">${icon(item.icon)}</div>
+    <h3>${item.title}</h3>
+    <p>${item.desc || ""}</p>
+    <div class="meta">
+      ${item.new ? '<span class="badge">New</span>' : ''}
+      ${(item.tags||[]).slice(0,3).map(t=>`<span class="tag-sm">#${t}</span>`).join("")}
+    </div>
+  `;
+  return a;
+}
+
+function normalize(str) {
+  return (str || "").toLowerCase();
+}
+
+function filterItems(items) {
+  const q = normalize(state.q);
+  const hasTags = state.activeTags.size > 0;
+  return items.filter(it => {
+    const text = `${it.title} ${it.desc} ${(it.tags||[]).join(" ")}`.toLowerCase();
+    const matchesQ = q ? text.includes(q) : true;
+    const matchesTags = hasTags ? (it.tags || []).some(t => state.activeTags.has(t)) : true;
+    return matchesQ && matchesTags;
+  });
+}
+
+function collectTags(data) {
+  state.tags = new Set();
+  for (const s of data.sections || []) {
+    for (const it of s.items || [])(it.tags || []).forEach(t => state.tags.add(t));
+  }
+}
+
+function render() {
+  const container = $("#sections");
+  container.innerHTML = "";
+
+  let totalCount = 0;
+  for (const section of state.data.sections || []) {
+    const items = filterItems(section.items || []);
+    totalCount += items.length;
+
+    if (items.length === 0) continue;
+
+    const sec = document.createElement("div");
+    sec.className = "section";
+    sec.innerHTML = `<h2>${section.title}</h2>`;
+
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    items.forEach(it => grid.appendChild(card(it)));
+
+    sec.appendChild(grid);
+    container.appendChild(sec);
   }
 
-  async function loadDefaultConfig() {
-    for (const url of DEFAULTS.configCandidates) {
-      try {
-        const res = await fetch(url, {
-          cache: 'no-store'
-        });
-        if (res.ok) {
-          const cfg = await res.json();
-          renderDashboard(cfg);
-          return;
-        }
-      } catch (e) {
-        /* try next */ }
-    }
-    dashboardEl.innerHTML = `<div class="card"><h3>No config found</h3><p class="muted">Place <code>assets/config.json</code> in your project.</p></div>`;
-  }
+  $("#empty").classList.toggle("hidden", totalCount !== 0);
+}
 
-  function initTheme() {
-    const t = localStorage.getItem('fs_theme');
-    if (t === 'light') document.body.classList.add('light');
-  }
-
-  async function renderDashboard(config) {
-    if (!config || !Array.isArray(config.charts)) {
-      dashboardEl.innerHTML = `<div class="card"><h3>Invalid config</h3><p class="muted">Config must contain a <code>charts</code> array.</p></div>`;
-      return;
-    }
-    dashboardEl.innerHTML = '';
-
-    for (const chart of config.charts) {
-      const card = document.createElement('article');
-      card.className = 'card';
-      const chartId = `chart_${chart.id || Math.random().toString(36).slice(2)}`;
-      card.innerHTML = `
-        <div class="toolbar">
-          <button class="btn" data-dlpng>PNG</button>
-          <button class="btn" data-dljson>JSON</button>
-          <button class="btn" data-dlcsv>CSV</button>
-        </div>
-        <h3>${escapeHtml(chart.title || chart.id || 'Untitled')}</h3>
-        <div id="${chartId}" class="chart"></div>
-      `;
-      dashboardEl.appendChild(card);
-
-      try {
-        const rows = await loadRows(chart.source);
-        const {
-          data,
-          layout,
-          csvOut
-        } = buildPlot(chart, rows);
-        await Plotly.newPlot(chartId, data, layout, {
-          displayModeBar: false,
-          responsive: true
-        });
-
-        card.querySelector('[data-dlpng]').addEventListener('click', () =>
-          Plotly.toImage(chartId, {
-            format: 'png',
-            height: 720,
-            width: 1280
-          }).then(url => download(url, `${chart.id||'chart'}.png`))
-        );
-        card.querySelector('[data-dljson]').addEventListener('click', () => {
-          const blob = new Blob([JSON.stringify({
-            chart,
-            sample: rows.slice(0, 20)
-          }, null, 2)], {
-            type: 'application/json'
-          });
-          download(URL.createObjectURL(blob), `${chart.id||'chart'}.json`);
-        });
-        card.querySelector('[data-dlcsv]').addEventListener('click', () => {
-          const blob = new Blob([csvOut], {
-            type: 'text/csv'
-          });
-          download(URL.createObjectURL(blob), `${chart.id||'chart'}.csv`);
-        });
-      } catch (err) {
-        console.error(err);
-        card.insertAdjacentHTML('beforeend', `<p class="muted">Failed to render: ${escapeHtml(err.message||String(err))}</p>`);
-      }
-    }
-  }
-
-  // --- Data loading helpers ---
-  async function loadRows(source) {
-    if (!source) throw new Error('Missing source');
-    if (source.type === 'csv' && source.path) {
-      return parseCsvFromUrl(source.path);
-    }
-    if ((source.type === 'google_sheet' || source.type === 'google_form') && (source.url || source.sheetUrl)) {
-      const url = toGoogleCsvUrl(source);
-      return parseCsvFromUrl(url);
-    }
-    if (source.type === 'url' && source.url) {
-      return parseCsvFromUrl(source.url);
-    }
-    if (source.type === 'inline' && Array.isArray(source.rows)) {
-      return source.rows;
-    }
-    throw new Error('Unsupported or invalid source');
-  }
-
-  async function parseCsvFromUrl(url) {
-    return new Promise((resolve, reject) => {
-      Papa.parse(url, {
-        download: true,
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-        complete: (r) => resolve(r.data),
-        error: (e) => reject(e)
-      });
+async function loadData() {
+  try {
+    const res = await fetch("/assets/pages.json", {
+      cache: "no-store"
     });
-  }
-
-  function toGoogleCsvUrl(source) {
-    // Expecting: source.url (or sheetUrl), optional source.sheet, optional source.range
-    const sheetUrl = source.url || source.sheetUrl;
-    const sheetName = source.sheet;
-    const range = source.range;
-
-    try {
-      const u = new URL(sheetUrl);
-      const isSheet = u.hostname.includes('docs.google.com');
-      if (!isSheet) return sheetUrl; // assume it's already a direct CSV URL
-
-      // Extract doc id and gid (if present)
-      const idMatch = u.pathname.match(/\/d\/([a-zA-Z0-9-_]+)/);
-      const id = idMatch ? idMatch[1] : null;
-      const gid = u.searchParams.get('gid');
-
-      if (!id) return sheetUrl;
-
-      // Base CSV export
-      const base = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv`;
-
-      // Priority:
-      // 1) If range is provided AND a sheet name is given, use sheet+range (most precise).
-      // 2) Else if gid exists, use gid (targets that tab).
-      // 3) Else if only sheet name is given, use sheet.
-      // 4) Fallback: whole spreadsheet default export.
-      if (range && sheetName) {
-        return `${base}&sheet=${encodeURIComponent(sheetName)}&range=${encodeURIComponent(range)}`;
-      }
-      if (gid) {
-        return `${base}&gid=${encodeURIComponent(gid)}`;
-      }
-      if (sheetName) {
-        return `${base}&sheet=${encodeURIComponent(sheetName)}`;
-      }
-      return base;
-    } catch {
-      return sheetUrl;
-    }
-  }
-
-  // --- Plot builders ---
-  function buildPlot(chart, rows) {
-    const type = chart.chart ?.type || 'bar';
-    const palette = (chart.chart ?.options ?.colors) || DEFAULTS.palette;
-    const title = chart.title || chart.id || '';
-    const csvOut = toCsv(rows);
-
-    if (type === 'bar') return buildBar(chart, rows, palette, title, csvOut);
-    if (type === 'line') return buildLine(chart, rows, palette, title, csvOut);
-    if (type === 'pie') return buildPie(chart, rows, palette, title, csvOut);
-    if (type === 'scatter') return buildScatter(chart, rows, palette, title, csvOut);
-    if (type === 'combo') return buildCombo(chart, rows, palette, title, csvOut);
-    if (type === 'sunburst') return buildSunburst(chart, rows, palette, title, csvOut);
-    throw new Error(`Unsupported chart type: ${type}`);
-  }
-
-  function buildBar(chart, rows, palette, title, csvOut) {
-    const m = chart.mapping || {};
-    const xK = m.x,
-      yK = m.y,
-      gK = m.group;
-    if (!xK || !yK) throw new Error('Bar chart requires mapping.x and mapping.y');
-    let traces = [];
-    if (gK) {
-      const groups = groupBy(rows, r => r[gK]);
-      let i = 0;
-      for (const [g, arr] of groups) {
-        traces.push({
-          type: 'bar',
-          name: String(g),
-          x: arr.map(r => r[xK]),
-          y: arr.map(r => toNum(r[yK])),
-          marker: {
-            color: palette[i++ % palette.length]
-          }
-        });
-      }
-    } else {
-      traces = [{
-        type: 'bar',
-        x: rows.map(r => r[xK]),
-        y: rows.map(r => toNum(r[yK])),
-        marker: {
-          color: palette[0]
-        }
-      }];
-    }
-    const layout = baseLayout(title);
-    if (chart.chart ?.stacked) layout.barmode = 'stack';
-    return {
-      data: traces,
-      layout,
-      csvOut
-    };
-  }
-
-  function buildLine(chart, rows, palette, title, csvOut) {
-    const m = chart.mapping || {};
-    const xK = m.x,
-      yK = m.y,
-      gK = m.group;
-    if (!xK || !yK) throw new Error('Line chart requires mapping.x and mapping.y');
-    let traces = [];
-    if (gK) {
-      const groups = groupBy(rows, r => r[gK]);
-      let i = 0;
-      for (const [g, arr] of groups) {
-        traces.push({
-          type: 'scatter',
-          mode: 'lines+markers',
-          name: String(g),
-          x: arr.map(r => r[xK]),
-          y: arr.map(r => toNum(r[yK])),
-          line: {
-            shape: 'spline'
-          },
-          marker: {
-            size: 6
-          },
-          hovertemplate: '%{x}: %{y}<extra>' + String(g) + '</extra>',
-          line: {
-            color: palette[i++ % palette.length]
-          }
-        });
-      }
-    } else {
-      traces = [{
-        type: 'scatter',
-        mode: 'lines+markers',
-        x: rows.map(r => r[xK]),
-        y: rows.map(r => toNum(r[yK])),
-        line: {
-          shape: 'spline',
-          color: palette[0]
+    if (!res.ok) throw new Error("Failed to load pages.json");
+    state.data = await res.json();
+  } catch (err) {
+    console.warn(err);
+    // Fallback demo data to keep the page usable if pages.json is missing
+    state.data = {
+      sections: [{
+          title: "Popular",
+          items: [{
+              id: "leaders",
+              title: "Global Leaderboards",
+              href: "leaderboards/index.html",
+              desc: "Top players, by game & season.",
+              icon: "trophy",
+              tags: ["global", "live", "rankings"],
+              new: true
+            },
+            {
+              id: "heatmap",
+              title: "Live Heatmap",
+              href: "heatmap/index.html",
+              desc: "Real‑time activity across regions.",
+              icon: "map",
+              tags: ["live", "regions"],
+              accent: "#06b6d4"
+            },
+            {
+              id: "sentiment",
+              title: "Community Sentiment",
+              href: "sentiment/index.html",
+              desc: "Social chatter trendlines.",
+              icon: "heart",
+              tags: ["social", "trend"]
+            }
+          ]
         },
-        marker: {
-          size: 6
+        {
+          title: "By Category",
+          items: [{
+              id: "attendance",
+              title: "Attendance Trends",
+              href: "attendance/index.html",
+              desc: "Multi‑year event growth.",
+              icon: "chart",
+              tags: ["events", "history"],
+              accent: "#f43f5e"
+            },
+            {
+              id: "timelines",
+              title: "Timelines & Milestones",
+              href: "timelines/index.html",
+              desc: "Roadmaps and rollouts.",
+              icon: "clock",
+              tags: ["planning", "org"]
+            }
+          ]
         }
-      }];
-    }
-    const layout = baseLayout(title);
-    return {
-      data: traces,
-      layout,
-      csvOut
+      ]
     };
   }
+  collectTags(state.data);
+  renderTags();
+  render();
+}
 
-  function buildScatter(chart, rows, palette, title, csvOut) {
-    const m = chart.mapping || {};
-    const xK = m.x,
-      yK = m.y,
-      gK = m.group;
-    if (!xK || !yK) throw new Error('Scatter chart requires mapping.x and mapping.y');
-    let traces = [];
-    let i = 0;
-    if (gK) {
-      const groups = groupBy(rows, r => r[gK]);
-      for (const [g, arr] of groups) {
-        traces.push({
-          type: 'scatter',
-          mode: 'markers',
-          name: String(g),
-          x: arr.map(r => toNum(r[xK])),
-          y: arr.map(r => toNum(r[yK])),
-          marker: {
-            size: 8,
-            color: palette[i++ % palette.length]
-          }
-        });
-      }
-    } else {
-      traces = [{
-        type: 'scatter',
-        mode: 'markers',
-        x: rows.map(r => toNum(r[xK])),
-        y: rows.map(r => toNum(r[yK])),
-        marker: {
-          size: 8,
-          color: palette[0]
-        }
-      }];
+function renderTags() {
+  const wrap = $("#tags");
+  wrap.innerHTML = "";
+  Array.from(state.tags).sort((a, b) => a.localeCompare(b)).forEach(t => wrap.appendChild(tagChip(t)));
+}
+
+function initSearch() {
+  const input = $("#search");
+  input.addEventListener("input", (e) => {
+    state.q = e.target.value;
+    render();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/" && document.activeElement !== input) {
+      e.preventDefault();
+      input.focus();
     }
-    const layout = baseLayout(title);
-    return {
-      data: traces,
-      layout,
-      csvOut
-    };
-  }
+  });
+}
 
-  function buildPie(chart, rows, palette, title, csvOut) {
-    const m = chart.mapping || {};
-    const labelsSpec = m.label || m.labels || m.x; // allow 'label' or 'labels' or 'x'
-    const valueSpec = m.value || m.values || m.y;
-    const valueRow = m.valueRow; // NEW: name of the row to extract values from (wide → pie)
-    const rowKeyName = m.rowKey || Object.keys(rows[0] || {})[0]; // NEW: column used to locate that row (default: first column)
+function initTheme() {
+  const btn = $("#themeToggle");
+  const key = "fsh-theme";
+  const apply = (t) => document.documentElement.dataset.theme = t;
+  const toggle = () => {
+    const cur = localStorage.getItem(key) || "auto";
+    const next = cur === "dark" ? "light" : cur === "light" ? "auto" : "dark";
+    localStorage.setItem(key, next);
+    apply(next);
+  };
+  apply(localStorage.getItem(key) || "auto");
+  btn.addEventListener("click", toggle);
+}
 
-    // --- NEW: Wide-table mode: label is an ARRAY and valueRow is provided ---
-    if (Array.isArray(labelsSpec) && valueRow) {
-      // Find the single row whose rowKey column equals valueRow
-      const match = rows.find(r => String(r[rowKeyName]) === String(valueRow));
-      if (!match) {
-        throw new Error(`Pie (wide): could not find row "${valueRow}" in column "${rowKeyName}"`);
-      }
+function initMisc() {
+  $("#year").textContent = new Date().getFullYear();
+  $("#clearFilters").addEventListener("click", () => {
+    state.activeTags.clear();
+    state.q = "";
+    $("#search").value = "";
+    renderTags();
+    render();
+  });
+}
 
-      // Slices are the listed label columns; values come from that row's cells
-      const labels = labelsSpec.slice();
-      const values = labels.map(col => toNum(match[col]));
-
-      const trace = {
-        type: 'pie',
-        labels,
-        values,
-        textinfo: 'label+percent',
-        marker: {
-          colors: palette
-        }
-      };
-      const layout = baseLayout(title);
-      layout.showlegend = false;
-      return {
-        data: [trace],
-        layout,
-        csvOut
-      };
-    }
-
-    // --- Existing behaviors remain unchanged ---
-
-    // Long/tidy mode: value column explicitly provided → one row = one slice
-    if (labelsSpec && valueSpec) {
-      const labels = rows.map(r => r[labelsSpec]);
-      const values = rows.map(r => toNum(r[valueSpec]));
-      const trace = {
-        type: 'pie',
-        labels,
-        values,
-        textinfo: 'label+percent',
-        marker: {
-          colors: palette
-        }
-      };
-      const layout = baseLayout(title);
-      layout.showlegend = false;
-      return {
-        data: [trace],
-        layout,
-        csvOut
-      };
-    }
-
-    // Count mode: no value column → count occurrences per label
-    if (labelsSpec) {
-      const labels = [];
-      const values = [];
-      const counts = countBy(rows, r => r[labelsSpec]);
-      for (const [k, v] of counts) {
-        labels.push(String(k));
-        values.push(v);
-      }
-      const trace = {
-        type: 'pie',
-        labels,
-        values,
-        textinfo: 'label+percent',
-        marker: {
-          colors: palette
-        }
-      };
-      const layout = baseLayout(title);
-      layout.showlegend = false;
-      return {
-        data: [trace],
-        layout,
-        csvOut
-      };
-    }
-
-    throw new Error('Pie chart requires mapping.label (or labels) — or labels[] with valueRow for wide tables');
-  }
-
-  function buildCombo(chart, rows, palette, title, csvOut) {
-    const m = chart.mapping || {};
-    const xK = m.x,
-      yBar = m.bar || m.y,
-      yLine = m.line || m.y2;
-    if (!xK || !yBar || !yLine) throw new Error('Combo requires mapping.x, mapping.bar, mapping.line');
-    const bar = {
-      type: 'bar',
-      name: chart.chart ?.barName || 'Bar',
-      x: rows.map(r => r[xK]),
-      y: rows.map(r => toNum(r[yBar])),
-      marker: {
-        color: palette[0]
-      }
-    };
-    const line = {
-      type: 'scatter',
-      mode: 'lines+markers',
-      name: chart.chart ?.lineName || 'Line',
-      x: rows.map(r => r[xK]),
-      y: rows.map(r => toNum(r[yLine])),
-      yaxis: 'y2',
-      line: {
-        shape: 'spline',
-        color: palette[1]
-      },
-      marker: {
-        size: 6
-      }
-    };
-    const layout = baseLayout(title);
-    layout.yaxis2 = {
-      overlaying: 'y',
-      side: 'right'
-    };
-    return {
-      data: [bar, line],
-      layout,
-      csvOut
-    };
-  }
-
-  function buildSunburst(chart, rows, palette, title, csvOut) {
-    const m = chart.mapping || {};
-    const labelsK = m.labels || m.label;
-    const parentsK = m.parents || m.parent;
-    const valuesK = m.values || m.value;
-    const path = m.path; // optional: array of columns for hierarchical path, e.g. ["Region","Country","City"]
-
-    let trace;
-
-    if (Array.isArray(path) && path.length >= 2) {
-      // Build (labels, parents, values) from a path of columns
-      // If valuesK is provided, sum it; else count rows per leaf.
-      const sep = ' / ';
-      const nodeMap = new Map(); // id -> {label, parent, value}
-      const getId = (parts) => parts.join(sep);
-
-      for (const r of rows) {
-        const parts = path.map(k => String(r[k] ?? ''));
-        // Build nodes for each depth
-        for (let d = 0; d < parts.length; d++) {
-          const label = parts[d];
-          const id = getId(parts.slice(0, d + 1));
-          const parent = d === 0 ? '' : getId(parts.slice(0, d));
-
-          if (!nodeMap.has(id)) nodeMap.set(id, {
-            label,
-            parent,
-            value: 0
-          });
-          // Only add value at the leaf level
-          if (d === parts.length - 1) {
-            const inc = valuesK ? Number(r[valuesK]) || 0 : 1;
-            nodeMap.get(id).value += inc;
-          }
-        }
-      }
-
-      const labels = [],
-        parents = [],
-        values = [];
-      nodeMap.forEach(n => {
-        labels.push(n.label);
-        parents.push(n.parent || '');
-        values.push(n.value);
-      });
-
-      trace = {
-        type: 'sunburst',
-        labels,
-        parents,
-        values,
-        branchvalues: 'total',
-        marker: {
-          colors: palette
-        }
-      };
-    } else if (labelsK && parentsK) {
-      // Direct labels/parents (+ optional values) mapping
-      const labels = rows.map(r => r[labelsK]);
-      const parents = rows.map(r => r[parentsK] ?? '');
-      const values = valuesK ? rows.map(r => Number(r[valuesK]) || 0) : undefined;
-
-      trace = {
-        type: 'sunburst',
-        labels,
-        parents,
-        ...(values ? {
-          values,
-          branchvalues: 'total'
-        } : {}),
-        marker: {
-          colors: palette
-        }
-      };
-    } else {
-      throw new Error('Sunburst requires either mapping.path (array) OR mapping.labels/parents with optional values');
-    }
-
-    const layout = baseLayout(title);
-    layout.sunburstcolorway = palette;
-    layout.extendtreemapcolors = true;
-
-    return {
-      data: [trace],
-      layout,
-      csvOut
-    };
-  }
-
-  function baseLayout(title) {
-    return {
-      title: {
-        text: title,
-        font: {
-          size: 18
-        }
-      },
-      margin: {
-        l: 40,
-        r: 30,
-        t: 40,
-        b: 40
-      },
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(0,0,0,0)',
-      font: {
-        color: getComputedStyle(document.body).color
-      },
-      xaxis: {
-        gridcolor: 'rgba(255,255,255,.12)'
-      },
-      yaxis: {
-        gridcolor: 'rgba(255,255,255,.12)'
-      }
-    };
-  }
-
-  // --- utils ---
-  function groupBy(arr, keyFn) {
-    const map = new Map();
-    for (const item of arr) {
-      const k = keyFn(item);
-      const bucket = map.get(k) || [];
-      bucket.push(item);
-      map.set(k, bucket);
-    }
-    return map;
-  }
-
-  function countBy(arr, keyFn) {
-    const map = new Map();
-    for (const item of arr) {
-      const k = keyFn(item);
-      map.set(k, (map.get(k) || 0) + 1);
-    }
-    return map;
-  }
-
-  function toNum(v) {
-    const n = Number(v);
-    return Number.isFinite(n) ? n : 0;
-  }
-
-  function toCsv(rows) {
-    if (!rows || !rows.length) return '';
-    const cols = Object.keys(rows[0]);
-    const head = cols.join(',');
-    const body = rows.map(r => cols.map(c => csvCell(r[c])).join(',')).join('\n');
-    return head + '\n' + body;
-  }
-
-  function csvCell(v) {
-    if (v == null) return '';
-    const s = String(v);
-    return (s.includes(',') || s.includes('"') || s.includes('\n')) ? '"' + s.replace(/"/g, '""') + '"' : s;
-  }
-
-  function download(url, filename) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>\"']/g, c => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      "\"": "&quot;",
-      "'": "&#39;"
-    } [c]))
-  }
-})();
+window.addEventListener("DOMContentLoaded", () => {
+  initSearch();
+  initTheme();
+  initMisc();
+  loadData();
+});
