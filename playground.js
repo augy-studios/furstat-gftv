@@ -680,3 +680,7 @@
         return n - 1;
     }
 })();
+
+function goBack() {
+    window.history.back();
+}
