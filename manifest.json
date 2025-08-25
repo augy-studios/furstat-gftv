@@ -1,6 +1,6 @@
 {
-    "name": "Furstat GFTV",
-    "short_name": "Furstat GFTV",
+    "name": "GFTV Furry Stats Hub",
+    "short_name": "GFTV Furry Stats Hub",
     "icons": [{
         "src": "favicon.ico",
         "type": "image/png",
@@ -11,5 +11,5 @@
     "background_color": "#fedc00",
     "display": "standalone",
     "display_override": ["fullscreen", "minimal-ui"],
-    "description": "Save this to access the Furstat GFTV website in your home screen!"
+    "description": "Save this to access the GFTV Furry Stats Hub website in your home screen!"
 }

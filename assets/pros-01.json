@@ -1,0 +1,20 @@
+{
+    "charts": [
+        {
+            "id": "pros-02-aft-bullies",
+            "title": "PROS-02 AFT Were your bullies furries?",
+            "source": {
+                "type": "google_sheet",
+                "url": "https://docs.google.com/spreadsheets/d/1JWhWMJ3AXlxOuq-HuyPie-aJSIGgbfAYQ4p580orEco/edit#gid=0",
+                "sheet": "Global",
+                "range": "A1:A21"
+            },
+            "mapping": {
+                "label": "As far as you know, were your bullies furries?"
+            },
+            "chart": {
+                "type": "pie"
+            }
+        }
+    ]
+}
