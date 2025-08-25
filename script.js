@@ -204,13 +204,24 @@ function initSearch() {
 function initTheme() {
   const btn = $("#themeToggle");
   const key = "fsh-theme";
-  const apply = (t) => document.documentElement.dataset.theme = t;
+
+  const updateButton = (t) => {
+    btn.textContent = t === "light" ? "☀️" : t === "dark" ? "🌙" : "🖥️";
+    btn.setAttribute("aria-label", `Theme: ${t}`);
+  };
+
+  const apply = (t) => {
+    document.documentElement.dataset.theme = t; // "dark" | "light" | "auto"
+    updateButton(t);
+  };
+
   const toggle = () => {
     const cur = localStorage.getItem(key) || "auto";
     const next = cur === "dark" ? "light" : cur === "light" ? "auto" : "dark";
     localStorage.setItem(key, next);
     apply(next);
   };
+
   apply(localStorage.getItem(key) || "auto");
   btn.addEventListener("click", toggle);
 }
